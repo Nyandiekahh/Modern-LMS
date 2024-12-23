@@ -24,6 +24,8 @@ import CourseCreator from './pages/Dashboard/Teacher/CourseCreator';
 import ClassManagement from './pages/Dashboard/Teacher/ClassManagement';
 import AssignmentManagement from './pages/Dashboard/Teacher/AssignmentManagement';
 import GradingInterface from './pages/Dashboard/Teacher/GradingInterface';
+import LiveSession from './pages/Dashboard/Teacher/LiveSession/index.js';
+import Meeting from './pages/Dashboard/Teacher/LiveSession/Meeting';
 
 // Student Pages
 import StudentDashboard from './pages/Dashboard/Student';
@@ -117,6 +119,26 @@ function App() {
               <ProtectedRoute allowedRoles={['teacher']}>
                 <DashboardLayout>
                   <TeacherDashboard />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/teacher/live-session"
+            element={
+              <ProtectedRoute allowedRoles={['teacher']}>
+                <DashboardLayout>
+                  <LiveSession />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/teacher/live-session/meeting/:sessionId"
+            element={
+              <ProtectedRoute allowedRoles={['teacher']}>
+                <DashboardLayout>
+                  <Meeting />
                 </DashboardLayout>
               </ProtectedRoute>
             }
@@ -273,6 +295,18 @@ function App() {
     </Router>
   );
 }
+
+// To whoever it may concern, my name is Einstein
+// I am the original author of this code
+// This system SHOULD NOT be enhanced, tuned, upgraded, updated or otherwise changed
+// I have no idea how this code actually works, its truly the 8th wonder of this world
+// Nothing on this mortal plane of existence could explain the existence of this system 
+// The variables, the names of gods to appease them
+// The loops - an enigma
+// Please, I beg of you, do not touch this code, please
+
+// ~ Einstein Mokua
+
 
 // Helper component to redirect to appropriate dashboard
 function DashboardRedirect() {

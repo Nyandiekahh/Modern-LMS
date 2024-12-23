@@ -9,7 +9,8 @@ import {
   ArrowRightOnRectangleIcon,
   AcademicCapIcon,
   ClipboardDocumentListIcon,
-  UserGroupIcon
+  UserGroupIcon,
+  VideoCameraIcon
 } from '@heroicons/react/24/outline';
 
 const DashboardLayout = ({ children }) => {
@@ -48,6 +49,11 @@ const DashboardLayout = ({ children }) => {
             icon: AcademicCapIcon
           }
         ]
+      },
+      { 
+        name: 'Live Session', 
+        icon: VideoCameraIcon, 
+        path: '/dashboard/teacher/live-session',
       },
       { 
         name: 'Course Creator', 
