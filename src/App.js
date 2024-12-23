@@ -1,4 +1,3 @@
-// src/App.jsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -9,16 +8,18 @@ import { useAuth } from './context/AuthContext';
 import Landing from './pages/Landing';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
+import ForgotPassword from './pages/Auth/ForgotPassword';
 
 // Admin Pages
 import AdminDashboard from './pages/Dashboard/Admin';
 import SchoolManagement from './pages/Dashboard/Admin/SchoolManagement';
 import UserManagement from './pages/Dashboard/Admin/UserManagement';
 import SystemSettings from './pages/Dashboard/Admin/SystemSettings';
-import Analytics from './pages/Dashboard/Admin/Analytics.jsx';
+import AdminAnalytics from './pages/Dashboard/Admin/Analytics';
 
 // Teacher Pages
 import TeacherDashboard from './pages/Dashboard/Teacher';
+import TeacherAnalytics from './pages/Dashboard/Teacher/Analytics';
 import CourseCreator from './pages/Dashboard/Teacher/CourseCreator';
 import ClassManagement from './pages/Dashboard/Teacher/ClassManagement';
 import AssignmentManagement from './pages/Dashboard/Teacher/AssignmentManagement';
@@ -32,6 +33,10 @@ import StudentAssignments from './pages/Dashboard/Student/Assignments';
 import StudentProgress from './pages/Dashboard/Student/Progress';
 import Discussion from './pages/Dashboard/Student/Discussion';
 
+// School Pages
+import SchoolDashboard from './pages/Dashboard/School';
+import DepartmentManager from './pages/Dashboard/School/DepartmentManager';
+
 function App() {
   return (
     <Router>
@@ -41,18 +46,19 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           
-          {/* Redirect /dashboard to appropriate dashboard based on role */}
+          {/* Dashboard Redirect */}
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute allowedRoles={['admin', 'teacher', 'student']}>
+              <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'school']}>
                 <DashboardRedirect />
               </ProtectedRoute>
             }
           />
 
-          {/* Admin Dashboard Routes */}
+          {/* Admin Routes */}
           <Route
             path="/dashboard/admin"
             element={
@@ -98,13 +104,13 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <DashboardLayout>
-                  <Analytics />
+                  <AdminAnalytics />
                 </DashboardLayout>
               </ProtectedRoute>
             }
           />
 
-          {/* Teacher Dashboard Routes */}
+          {/* Teacher Routes */}
           <Route
             path="/dashboard/teacher"
             element={
@@ -116,11 +122,21 @@ function App() {
             }
           />
           <Route
-            path="/dashboard/teacher/courses/create"
+            path="/dashboard/teacher/courses"
             element={
               <ProtectedRoute allowedRoles={['teacher']}>
                 <DashboardLayout>
                   <CourseCreator />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/teacher/analytics"
+            element={
+              <ProtectedRoute allowedRoles={['teacher']}>
+                <DashboardLayout>
+                  <TeacherAnalytics />
                 </DashboardLayout>
               </ProtectedRoute>
             }
@@ -136,7 +152,17 @@ function App() {
             }
           />
           <Route
-            path="/dashboard/teacher/classes/:classId/assignments"
+            path="/dashboard/teacher/classes/manage"
+            element={
+              <ProtectedRoute allowedRoles={['teacher']}>
+                <DashboardLayout>
+                  <ClassManagement />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/teacher/classes/assignments"
             element={
               <ProtectedRoute allowedRoles={['teacher']}>
                 <DashboardLayout>
@@ -146,7 +172,7 @@ function App() {
             }
           />
           <Route
-            path="/dashboard/teacher/grading/:assignmentId"
+            path="/dashboard/teacher/classes/grading"
             element={
               <ProtectedRoute allowedRoles={['teacher']}>
                 <DashboardLayout>
@@ -156,7 +182,7 @@ function App() {
             }
           />
 
-          {/* Student Dashboard Routes */}
+          {/* Student Routes */}
           <Route
             path="/dashboard/student"
             element={
@@ -218,7 +244,29 @@ function App() {
             }
           />
 
-          {/* Catch all route */}
+          {/* School Routes */}
+          <Route
+            path="/dashboard/school"
+            element={
+              <ProtectedRoute allowedRoles={['school']}>
+                <DashboardLayout>
+                  <SchoolDashboard />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/school/departments"
+            element={
+              <ProtectedRoute allowedRoles={['school']}>
+                <DashboardLayout>
+                  <DepartmentManager />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Catch all route - redirect to login */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>
@@ -230,15 +278,18 @@ function App() {
 function DashboardRedirect() {
   const { user } = useAuth();
   
-  if (user.role === 'admin') {
-    return <Navigate to="/dashboard/admin" replace />;
-  } else if (user.role === 'teacher') {
-    return <Navigate to="/dashboard/teacher" replace />;
-  } else if (user.role === 'student') {
-    return <Navigate to="/dashboard/student" replace />;
+  switch (user?.role) {
+    case 'admin':
+      return <Navigate to="/dashboard/admin" replace />;
+    case 'teacher':
+      return <Navigate to="/dashboard/teacher" replace />;
+    case 'student':
+      return <Navigate to="/dashboard/student" replace />;
+    case 'school':
+      return <Navigate to="/dashboard/school" replace />;
+    default:
+      return <Navigate to="/login" replace />;
   }
-  
-  return <Navigate to="/login" replace />;
 }
 
 export default App;
